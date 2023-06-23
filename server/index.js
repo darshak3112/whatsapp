@@ -23,7 +23,7 @@ app.use("/api/auth", AuthRoutes);
 app.use("/api/messages", MessageRoutes);
 
 const server = app.listen(process.env.PORT, () => {
-  console.log("app listen on ",process.env.PORT);
+  console.log("app listen on ", process.env.PORT);
 });
 
 const io = new Server(server, { cors: { origin: "http://localhost:3000" } });
@@ -44,4 +44,46 @@ io.on("connection", (socket) => {
       });
     }
   });
+
+  socket.on("outgoing-voice-call", (data) => {
+    const sendUserSocket = onlineUsers.get(data.to);
+    console.log("outgoing", data, "so",sendUserSocket);
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit("incoming-voice-call", {
+        from: data.from, roomId: data.roomId, callType: data.callType
+      });
+    }
+  });
+
+  socket.on("outgoing-video-call", (data) => {
+    const sendUserSocket = onlineUsers.get(data.to);
+    console.log("outgoing", data, sendUserSocket);
+
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit("incoming-video-call", {
+        from: data.from, roomId: data.roomId, callType: data.callType
+      });
+    }
+  });
+
+  socket.on("reject-voice-call", (data) => {
+    const sendUserSocket = onlineUsers.get(data.from);
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit("voice-call-rejected");
+    }
+  });
+
+  socket.on("reject-video-call", (data) => {
+    const sendUserSocket = onlineUsers.get(data.from);
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit("video-call-rejected");
+    }
+  });
+
+  socket.on("accept-incoming-call", ({ id }) => {
+    const sendUserSocket = onlineUsers.get(id);
+    socket.to(sendUserSocket).emit("accept-call");
+
+  });
+
 });
