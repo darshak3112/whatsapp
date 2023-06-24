@@ -47,7 +47,7 @@ io.on("connection", (socket) => {
 
   socket.on("outgoing-voice-call", (data) => {
     const sendUserSocket = onlineUsers.get(data.to);
-    console.log("outgoing", data, "so",sendUserSocket);
+  
     if (sendUserSocket) {
       socket.to(sendUserSocket).emit("incoming-voice-call", {
         from: data.from, roomId: data.roomId, callType: data.callType
@@ -57,7 +57,7 @@ io.on("connection", (socket) => {
 
   socket.on("outgoing-video-call", (data) => {
     const sendUserSocket = onlineUsers.get(data.to);
-    console.log("outgoing", data, sendUserSocket);
+   
 
     if (sendUserSocket) {
       socket.to(sendUserSocket).emit("incoming-video-call", {
