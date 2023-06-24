@@ -116,6 +116,12 @@ const reducer = (state, action) => {
                 incomingVideoCall: undefined,
             }
         };
+        case reducerCases.SET_EXIT_CHAT: {
+            return {
+                ...state,
+                currentChatUser: undefined,
+            }
+        };
         default:
             return state;
     }
